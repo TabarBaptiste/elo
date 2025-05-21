@@ -24,7 +24,7 @@
 
                 <div>
                     {% if app.user %}
-                        <a class="faux-lien" href="{{ path('app_client_show', {'id': user.id}) }}">Bonjour {{ app.user.prenom|default(app.user.email) }}</a>
+                        <span class="faux-lien">Bonjour {{ app.user.prenom|default(app.user.email) }}</span>
                         {% if is_granted('ROLE_COIFFEUSE') %}
                             <a class="lien-head" href="{{ path('app_reservation') }}">Réservations</a>
                             <a class="lien-head" href="{{ path('app_client') }}">Clients</a>
