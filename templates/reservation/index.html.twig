@@ -9,21 +9,22 @@
         <h4>{{ reservation.utilisateur.prenom }} {{ reservation.utilisateur.nom }}</h4>
         <p><strong>{{ reservation.dateReservation|date('l d F Y', 'Europe/Paris')|capitalize }}</strong> à {{ reservation.heureReservation|date('H:i') }}</p>
 
-        {% if is_granted('ROLE_COIFFEUSE') %}
-            <form method="post" action="{{ path('app_reservation_update_statut', {id: reservation.id}) }}">
-                <select name="statut">
-                    {% for statut in statuts %}
-                        <option value="{{ statut.value }}" {% if reservation.statut == statut %}selected{% endif %}>
-                            {{ statut.label }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <button type="submit">Modifier</button>
+        {% if is_granted('ROLE_COIFFEUSE') and reservation.statut == constant('App\\Enum\\ReservationStatut::EN_ATTENTE') %}
+            <form method="post" action="{{ path('app_reservation_update_statut', {id: reservation.id}) }}" style="display:inline-block;">
+                <input type="hidden" name="statut" value="{{ constant('App\\Enum\\ReservationStatut::PASSEE').value }}">
+                <button type="submit">Marquer comme passée</button>
+            </form>
+            <form method="post" action="{{ path('app_reservation_update_statut', {id: reservation.id}) }}" style="display:inline-block;">
+                <input type="hidden" name="statut" value="{{ constant('App\\Enum\\ReservationStatut::REFUSEE').value }}">
+                <button type="submit">Refuser</button>
             </form>
         {% else %}
             <p><strong>Statut :</strong> {{ reservation.statut.label|capitalize }}</p>
         {% endif %}
+
     </div>
+{% else %}
+    <li>Aucune réservation</li>
 {% endfor %}
 
 </div>

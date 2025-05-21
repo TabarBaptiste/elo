@@ -56,7 +56,6 @@ final class ReservationController extends AbstractController
             $user->setPrenom($request->request->get('prenom'));
             $user->setNom($request->request->get('nom'));
             $user->setEmail($request->request->get('email'));
-            dd($user->getVisite());
             $em->persist($user);
             $reservation->setUtilisateur($user);
         }
@@ -85,16 +84,21 @@ final class ReservationController extends AbstractController
 
         $newStatut = $request->request->get('statut');
 
-        if (!in_array($newStatut, array_map(fn($case) => $case->value, ReservationStatut::cases()))) {
+        // Vérification que le statut est valide
+        if (!in_array($newStatut, ReservationStatut::values())) {
             throw new \InvalidArgumentException("Statut invalide");
         }
 
-        dd($this->getUser());
-        // Création d'un utilisateur temporaire ou simple stockage des données
-        $user = new User();
-        dd($user->getVisite());
-        $em->persist($user);
+        // Récupération de l'utilisateur lié à la réservation
+        $client = $reservation->getUtilisateur();
 
+        // Incrément du compteur de visites si statut "confirmée"
+        if ($newStatut === ReservationStatut::PASSEE->value && $client !== null) {
+            $client->setVisite($client->getVisite() + 1);
+            $em->persist($client); // Tu persistes le bon utilisateur
+        }
+
+        // Mise à jour du statut
         $reservation->setStatut(ReservationStatut::from($newStatut));
         $em->flush();
 

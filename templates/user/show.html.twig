@@ -1,18 +1,45 @@
 {% extends 'base.html.twig' %}
+
 {% block title %}Utilisateur{% endblock %}
+
 {% block body %}
-<h1>Prestations réservées de {{ user.prenom }} {{ user.nom }}</h1>
+<div class="container">
+    <h1>Profil de {{ user.prenom }} {{ user.nom }}</h1>
 
-<ul>
-    {% for reservationPrestation in prestationsReservees %}
-        <li>
-            {{ reservationPrestation.prestation.nom }} -
-            Réservé pour le {{ reservationPrestation.reservation.dateReservation|date('d/m/Y') }}
-            à {{ reservationPrestation.reservation.heureReservation|date('H:i') }} | {{ reservationPrestation.reservation.statut.label }}
-        </li>
+    <div class="card">
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <p><strong>Nombre de réservations :</strong> {{ NombreprestationsReservees }}</p>
+        <p><strong>Compte créé le :</strong> {{ user.createdAt|date('d/m/Y') }}</p>
+        {# <p><strong>Rôle :</strong> {{ role }}</p> #}
+    </div>
+
+    <h2>Historique des réservations</h2>
+
+    {% if prestationsReservees is not empty %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Prestation</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservationPrestation in prestationsReservees %}
+                    <tr>
+                        <td>{{ reservationPrestation.prestation.nom }}</td>
+                        <td>{{ reservationPrestation.reservation.dateReservation|date('d/m/Y') }}</td>
+                        <td>{{ reservationPrestation.reservation.heureReservation|date('H:i') }}</td>
+                        <td class="statut {{ reservationPrestation.reservation.statut.value }}">
+                            {{ reservationPrestation.reservation.statut.label }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <li>Aucune prestation réservée</li>
-    {% endfor %}
-</ul>
-
+        <p>Aucune prestation réservée.</p>
+    {% endif %}
+</div>
 {% endblock %}

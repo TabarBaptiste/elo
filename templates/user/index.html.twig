@@ -9,13 +9,6 @@
             <a class="faux-lien" href="{{ path('app_client_show', {'id': users.id}) }}">
                 <h3>{{ users.prenom }} {{ users.nom }}</h3>
                 <p><strong>Visite:</strong> {{ users.visite }}</p>
-                {# <p><strong>Rôle :</strong> {{ users.roles }}</p> #}
-                {# <p><strong>Prix:</strong> {{ users.nom }} €</p> #}
-                {# {% if users.description %} #}
-                {# {% endif %} #}
-                {# <div class="actions">
-                    <a class="button-modifier" href="{{ path('app_users_edit', {'id': users.id}) }}">Modifier</a>
-                </div> #}
             </a>
         </div>
     {% endfor %}

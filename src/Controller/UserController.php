@@ -26,7 +26,9 @@ public function client(User $user, ReservationPrestationRepository $repo): Respo
 
     return $this->render('user/show.html.twig', [
         'user' => $user,
+        'role' => $user->getRoles()[0],
         'prestationsReservees' => $prestationsReservees,
+        'NombreprestationsReservees' => count($prestationsReservees),
     ]);
 }
 

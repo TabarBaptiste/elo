@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
@@ -21,9 +22,9 @@
                     </a>
                 </div>
 
-                <div class="link-head">
+                <div>
                     {% if app.user %}
-                        <span class="lien-head">Bonjour {{ app.user.prenom|default(app.user.email) }}</span>
+                        <a class="faux-lien" href="{{ path('app_client_show', {'id': user.id}) }}">Bonjour {{ app.user.prenom|default(app.user.email) }}</a>
                         {% if is_granted('ROLE_COIFFEUSE') %}
                             <a class="lien-head" href="{{ path('app_reservation') }}">Réservations</a>
                             <a class="lien-head" href="{{ path('app_client') }}">Clients</a>
