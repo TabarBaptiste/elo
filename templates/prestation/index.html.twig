@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nos Prestations{% endblock %}
+{% block body %}
+<h1>Nos Prestations</h1>
+
+<div class="card-grid">
+    {% for prestation in prestations %}
+    <div class="card">
+        <a class="faux-lien" href="{{ path('app_prestation_show', {'id': prestation.id}) }}">
+            <h3>{{ prestation.nom }}</h3>
+            <p><strong>Prix:</strong> {{ prestation.prix }} €</p>
+            <p><strong>Durée:</strong> {{ prestation.duree }} min</p>
+            {% if prestation.description %}
+                <p><strong>Description:</strong> {{ prestation.description }}</p>
+            {% endif %}
+            <div class="actions">
+                <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

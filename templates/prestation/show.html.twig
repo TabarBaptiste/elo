@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+{% block title %}Détail Prestation{% endblock %}
+{% block body %}
+<div class="centered">
+    <h2>{{ prestation.nom }}</h2>
+    <p><strong>Prix :</strong> {{ prestation.prix }} €</p>
+    <p><strong>Durée :</strong> {{ prestation.duree }} minutes</p>
+    <p><strong>Description :</strong> {{ prestation.description }}</p>
+    <p><strong>Formule :</strong> {{ prestation.formule ? 'Oui' : 'Non' }}</p>
+    <div class="actions">
+        <a class="button-retour" href="{{ path('app_prestation_index') }}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+        <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
+    </div>
+
+<h3>Choisissez une date & une heure</h3>
+
+<form id="reservation-form" method="GET" action="{{ path('app_reservation_resume') }}">
+    <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
+    <input type="hidden" name="date" id="selected-date">
+    <input type="hidden" name="heure" id="selected-heure">
+</form>
+
+<div id="disponibilites-container">
+    {% set i = 0 %}
+    {% for date, horaires in disponibilites %}
+        <div class="date-block" data-visible="{{ i < 5 ? 'true' : 'false' }}" style="{{ i < 5 ? '' : 'display: none;' }}">
+            <button class="toggle-date" type="button">
+                {{ date|date('l j F', 'Europe/Paris')|capitalize }}
+            </button>
+            <div class="horaires" style="display: none;">
+                {% for horaire in horaires %}
+                    <button class="horaire-btn" type="button"
+                            data-date="{{ date }}"
+                            data-heure="{{ horaire.heureDebut }}">
+                        {{ horaire.heureDebut }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+        {% set i = i + 1 %}
+    {% endfor %}
+</div>
+
+{% if disponibilites|length > 5 %}
+    <button id="load-more" type="button">Afficher plus de disponibilités</button>
+{% endif %}
+
+
+</div>
+
+<script>
+    document.querySelectorAll('.toggle-date').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const horaires = btn.nextElementSibling;
+            horaires.style.display = horaires.style.display === 'none' ? 'flex' : 'none';
+        });
+    });
+
+    document.querySelectorAll('.horaire-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const date = btn.dataset.date;
+            const heure = btn.dataset.heure;
+
+            document.getElementById('selected-date').value = date;
+            document.getElementById('selected-heure').value = heure;
+
+            document.getElementById('reservation-form').submit();
+        });
+    });
+
+    const loadMoreBtn = document.getElementById('load-more');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            const hiddenBlocks = document.querySelectorAll('.date-block[data-visible="false"]');
+            for (let i = 0; i < 5 && i < hiddenBlocks.length; i++) {
+                hiddenBlocks[i].style.display = 'block';
+                hiddenBlocks[i].dataset.visible = 'true';
+            }
+            if (document.querySelectorAll('.date-block[data-visible="false"]').length === 0) {
+                loadMoreBtn.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+
+{% endblock %}

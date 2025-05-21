@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+{% block title %}Résumé de la réservation{% endblock %}
+{% block body %}
+
+<h2>Résumé de votre réservation</h2>
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+
+<h3><span class="num">1. </span>Prestation sélectionnée</h3>
+<div class="resume">
+    <p><strong>Prestation :</strong> {{ prestation.nom }}</p>
+    <p>{{ prestation.prix }} € | {{ prestation.duree }}min</p>
+</div>
+
+<h3><span class="num">2. </span>Date et heure sélectionnées</h3>
+<div class="resume">
+    <p>{{ date|date('l d F Y', 'Europe/Paris')|capitalize }}</p>
+    <p>à {{ heure }}</p>
+</div>
+
+<h3><span class="num">3. </span>Vos informations</h3>
+<form id="confirmation-form" action="{{ path('app_reservation_confirm') }}" method="post">
+    {% if user %}
+        <p><strong>Nom :</strong> {{ user.nom }}</p>
+        <p><strong>Prénom :</strong> {{ user.prenom }}</p>
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <input type="hidden" name="prenom" value="{{ user.prenom }}">
+        <input type="hidden" name="nom" value="{{ user.nom }}">
+        <input type="hidden" name="email" value="{{ user.email }}">
+        <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
+        <input type="hidden" name="date" value="{{ date|date('Y-m-d') }}">
+        <input type="hidden" name="heure" value="{{ heure }}">
+    {% else %}
+        <label for="prenom">Prénom :</label>
+        <input type="text" name="prenom" id="prenom" required>
+
+        <label for="nom">Nom :</label>
+        <input type="text" name="nom" id="nom" required>
+
+        <label for="email">Email :</label>
+        <input type="email" name="email" id="email" required>
+
+        <p id="error-message" style="color: red; display: none;">Veuillez remplir toutes les informations pour confirmer votre réservation.</p>
+    {% endif %}
+
+    <button type="submit">Confirmer la réservation</button>
+</form>
+
+<a href="{{ path('app_prestation_show', {'id': prestation.id}) }}">Retour à la prestation</a>
+
+{% if not user %}
+<script>
+    document.getElementById('confirmation-form').addEventListener('submit', function (e) {
+        const prenom = document.getElementById('prenom').value.trim();
+        const nom = document.getElementById('nom').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const error = document.getElementById('error-message');
+
+        if (!prenom || !nom || !email) {
+            e.preventDefault();
+            error.style.display = 'block';
+        }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

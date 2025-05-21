@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block title %}Utilisateur{% endblock %}
+{% block body %}
+<h1>Prestations réservées de {{ user.prenom }} {{ user.nom }}</h1>
+
+<ul>
+    {% for reservationPrestation in prestationsReservees %}
+        <li>
+            {{ reservationPrestation.prestation.nom }} -
+            Réservé pour le {{ reservationPrestation.reservation.dateReservation|date('d/m/Y') }}
+            à {{ reservationPrestation.reservation.heureReservation|date('H:i') }} | {{ reservationPrestation.reservation.statut.label }}
+        </li>
+    {% else %}
+        <li>Aucune prestation réservée</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

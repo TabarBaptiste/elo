@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-BVvP+V6J/KhzRj49lvE+3Oa3Y/9Gk2t3c7e7M3Fg5LKkFYqfB5p1FYUnZpN5Pt/uqBceQhGzZTtRZ12mAIjWig==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
         {% endblock %}
@@ -12,6 +13,29 @@
         {% endblock %}
     </head>
     <body>
+        <header>
+            <nav class="navbar">
+                <div>
+                    <a href="{{ path('app_prestation_index') }}" style="font-weight: bold; font-size: 1.5rem; text-decoration: none; color: black;">
+                        Elo
+                    </a>
+                </div>
+
+                <div class="link-head">
+                    {% if app.user %}
+                        <span class="lien-head">Bonjour {{ app.user.prenom|default(app.user.email) }}</span>
+                        {% if is_granted('ROLE_COIFFEUSE') %}
+                            <a class="lien-head" href="{{ path('app_reservation') }}">Réservations</a>
+                            <a class="lien-head" href="{{ path('app_client') }}">Clients</a>
+                        {% endif %}
+                        <a class="lien-head" href="{{ path('app_logout') }}">Déconnexion</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" style="margin-right: 1rem;">Connexion</a>
+                        <a href="{{ path('app_register') }}">Inscription</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </header>
         {% block body %}{% endblock %}
     </body>
 </html>

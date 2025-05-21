@@ -1,3 +1,185 @@
+/* public/styles/app.css */
+
 body {
-    background-color: skyblue;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+h1,
+h2,
+h3 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.faux-lien {
+    color: #333;
+}
+
+.faux-lien:hover {
+    text-decoration: none;
+}
+
+.container {
+    padding: 1rem;
+    max-width: 900px;
+    margin: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f0f0f0;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #34495e;
+}
+
+.card p {
+    margin: 0.25rem 0;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.button-retour,
+.button-modifier {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.button-retour:hover {
+    background-color: #2980b9;
+}
+
+.button-retour {
+    background-color: #3498db;
+}
+
+.button-modifier {
+    background-color: green;
+}
+
+.centered {
+    max-width: 400px;
+    margin: 2rem auto;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.date-block {
+    margin-bottom: 1em;
+}
+
+.toggle-date {
+    background-color: #f3f3f3;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.horaires {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.horaire-btn {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.horaire-btn:hover {
+    background: #e5e5e5;
+}
+
+.navbar {
+    display: flex;
+    padding: 1rem;
+    background-color: #f2f2f2;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+}
+
+.link-head {}
+
+.lien-head {
+    margin-right: 1rem;
+}
+
+@media screen and (max-width: 600px) {
+
+    h1,
+    h2,
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.9rem;
+    }
 }
