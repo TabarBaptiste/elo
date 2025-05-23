@@ -13,9 +13,11 @@
             {% if prestation.description %}
                 <p><strong>Description:</strong> {{ prestation.description }}</p>
             {% endif %}
-            <div class="actions">
-                <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
-            </div>
+            {% if is_granted('ROLE_COIFFEUSE') %}
+                <div class="actions">
+                    <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
+                </div>
+            {% endif %}
         </a>
     </div>
     {% endfor %}

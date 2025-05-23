@@ -19,17 +19,26 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('user/{id}', name: 'app_client_show')]
-public function client(User $user, ReservationPrestationRepository $repo): Response
-{
-    $prestationsReservees = $repo->findByUser($user);
+    #[Route('/user/{id}', name: 'app_client_show')]
+    public function client(
+        User $user,
+        ReservationPrestationRepository $repo
+    ): Response {
+        $currentUser = $this->getUser();
 
-    return $this->render('user/show.html.twig', [
-        'user' => $user,
-        'role' => $user->getRoles()[0],
-        'prestationsReservees' => $prestationsReservees,
-        'NombreprestationsReservees' => count($prestationsReservees),
-    ]);
-}
+        // Vérifie que l'utilisateur est connecté et que c'est bien SON profil
+        if (!$currentUser || $currentUser->getId() !== $user->getId() || !in_array('ROLE_USER', $currentUser->getRoles())) {
+            return $this->redirectToRoute('app_prestation_index');
+        }
+
+        $prestationsReservees = $repo->findByUser($user);
+
+        return $this->render('user/show.html.twig', [
+            'user' => $user,
+            'role' => $user->getRoles()[0],
+            'prestationsReservees' => $prestationsReservees,
+            'NombreprestationsReservees' => count($prestationsReservees),
+        ]);
+    }
 
 }

@@ -7,10 +7,12 @@
     <p><strong>Durée :</strong> {{ prestation.duree }} minutes</p>
     <p><strong>Description :</strong> {{ prestation.description }}</p>
     <p><strong>Formule :</strong> {{ prestation.formule ? 'Oui' : 'Non' }}</p>
-    <div class="actions">
-        <a class="button-retour" href="{{ path('app_prestation_index') }}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
-        <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
-    </div>
+    {% if is_granted('ROLE_COIFFEUSE') %}
+        <div class="actions">
+            <a class="button-retour" href="{{ path('app_prestation_index') }}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+            <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
+        </div>
+    {% endif %}
 
 <h3>Choisissez une date & une heure</h3>
 
