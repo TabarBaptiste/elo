@@ -3,6 +3,9 @@
 {% block body %}
 <h1>Nos Prestations</h1>
 
+<div class="actions">
+    <a class="button-ajouter" href="{{ path('app_prestation_new')}}">Ajouter</a>
+</div>
 <div class="card-grid">
     {% for prestation in prestations %}
     <div class="card">
