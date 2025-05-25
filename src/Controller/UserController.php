@@ -26,16 +26,25 @@ final class UserController extends AbstractController
     ): Response {
         $currentUser = $this->getUser();
 
-        // Vérifie que l'utilisateur est connecté et que c'est bien SON profil
-        if (!$currentUser || $currentUser->getId() !== $user->getId() || !in_array('ROLE_USER', $currentUser->getRoles())) {
+        // Redirection si non connecté
+        if (!$currentUser) {
             return $this->redirectToRoute('app_prestation_index');
         }
 
+        // Si ce n’est pas le bon utilisateur ET qu’il n’a pas le rôle coiffeuse
+        $isSameUser = $currentUser->getId() === $user->getId();
+        $isCoiffeuse = $this->isGranted('ROLE_COIFFEUSE');
+
+        if (!$isSameUser && !$isCoiffeuse) {
+            return $this->redirectToRoute('app_prestation_index');
+        }
+
+        // OK : accès autorisé
         $prestationsReservees = $repo->findByUser($user);
 
         return $this->render('user/show.html.twig', [
             'user' => $user,
-            'role' => $user->getRoles()[0],
+            'role' => $user->getRoles()[0] ?? null,
             'prestationsReservees' => $prestationsReservees,
             'NombreprestationsReservees' => count($prestationsReservees),
         ]);

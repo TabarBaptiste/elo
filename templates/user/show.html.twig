@@ -23,6 +23,7 @@
                     <th>Date</th>
                     <th>Heure</th>
                     <th>Statut</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,21 @@
                         <td>{{ reservationPrestation.reservation.heureReservation|date('H:i') }}</td>
                         <td class="statut {{ reservationPrestation.reservation.statut.value }}">
                             {{ reservationPrestation.reservation.statut.label }}
+                        </td>
+                        <td>
+                            {% if reservationPrestation.reservation.statut.name == "EN_ATTENTE" %}
+                                <form method="post"
+                                    action="{{ path('app_reservation_update_statut', {id: reservationPrestation.reservation.id}) }}"
+                                    style="display:inline;">
+                                    <input type="hidden"
+                                        name="statut"
+                                        value="{{ constant('App\\Enum\\ReservationStatut::ANNULER').value }}">
+                                    <button type="submit" class="button-retour" style="background-color:#e74c3c;">
+                                        Annuler
+                                    </button>
+                                </form>
+                            {% else %}
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

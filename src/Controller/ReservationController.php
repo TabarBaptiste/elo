@@ -23,7 +23,7 @@ final class ReservationController extends AbstractController
     {
         return $this->render('reservation/index.html.twig', [
             'reservations' => $reservationRepository->findAll(),
-            'statuts' => ReservationStatut::cases(), // ← ici
+            'statuts' => ReservationStatut::cases()
         ]);
     }
 
@@ -71,7 +71,11 @@ final class ReservationController extends AbstractController
 
         $this->addFlash('success', 'Réservation enregistrée avec succès !');
 
-        return $this->redirectToRoute('app_prestation_index');
+        if ($this->getUser()) {
+            $this->addFlash('success', 'Réservation enregistrée');
+            return $this->redirectToRoute('app_client_show', ['id' => $this->getUser()->getId()]);
+        }
+        return $this->redirectToRoute('app_client_show');
     }
 
     #[Route('/reservation/{id}/statut', name: 'app_reservation_update_statut', methods: ['POST'])]
@@ -95,7 +99,7 @@ final class ReservationController extends AbstractController
         // Incrément du compteur de visites si statut "confirmée"
         if ($newStatut === ReservationStatut::PASSEE->value && $client !== null) {
             $client->setVisite($client->getVisite() + 1);
-            $em->persist($client); // Tu persistes le bon utilisateur
+            $em->persist($client);
         }
 
         // Mise à jour du statut
