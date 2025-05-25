@@ -10,14 +10,16 @@
         <p><strong>{{ reservation.dateReservation|date('l d F Y', 'Europe/Paris')|capitalize }}</strong> à {{ reservation.heureReservation|date('H:i') }}</p>
 
         {% if is_granted('ROLE_COIFFEUSE') and reservation.statut == constant('App\\Enum\\ReservationStatut::EN_ATTENTE') %}
-            <form method="post" action="{{ path('app_reservation_update_statut', {id: reservation.id}) }}" style="display:inline-block;">
-                <input type="hidden" name="statut" value="{{ constant('App\\Enum\\ReservationStatut::PASSEE').value }}">
-                <button type="submit">Marquer comme passée</button>
-            </form>
+        <div class="actions">
             <form method="post" action="{{ path('app_reservation_update_statut', {id: reservation.id}) }}" style="display:inline-block;">
                 <input type="hidden" name="statut" value="{{ constant('App\\Enum\\ReservationStatut::ANNULER').value }}">
-                <button type="submit">Refuser</button>
+                <button class="button-supprimer" type="submit">Annuler</button>
             </form>
+            <form method="post" action="{{ path('app_reservation_update_statut', {id: reservation.id}) }}" style="display:inline-block;">
+                <input type="hidden" name="statut" value="{{ constant('App\\Enum\\ReservationStatut::PASSEE').value }}">
+                <button class="button-ajouter" style="margin: 0" type="submit">Passée</button>
+            </form>
+        </div>
         {% else %}
             <p><strong>Statut :</strong> <span class="statut {{ reservation.statut.value }}">{{ reservation.statut.label|capitalize }}</span></p>
         {% endif %}
