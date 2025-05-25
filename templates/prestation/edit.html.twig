@@ -8,8 +8,10 @@
 
         {{ include('prestation/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
 
-        <a href="{{ path('app_prestation_index') }}" class="faux-lien">← Retour à la liste</a>
+        <div class="actions">
+            <a href="{{ path('app_prestation_index') }}" class="button-retour">Retour à la liste</a>
+            {{ include('prestation/_delete_form.html.twig') }}
+        </div>  
 
-        {{ include('prestation/_delete_form.html.twig') }}
     </div>
 {% endblock %}

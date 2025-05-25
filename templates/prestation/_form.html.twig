@@ -1,15 +1,15 @@
-    {{ form_start(form) }}
+{{ form_start(form) }}
 
-        {% for field in form %}
-            <div class="form-group" style="margin-bottom: 1rem;">
-                {{ form_label(field) }}
-                {{ form_widget(field) }}
-                {{ form_errors(field) }}
-            </div>
-        {% endfor %}
+    {% for field in form %}
+        <div class="form-group" style="margin-bottom: 1rem;">
+            {{ form_label(field) }}
+            {{ form_widget(field) }}
+            {{ form_errors(field) }}
+        </div>
+    {% endfor %}
 
-        <button class="button-retour" style="width: 100%;">
-            {{ button_label|default('Sauvegarder') }}
-        </button>
+    <button class="button-modifier" style="width: 100%;">
+        {{ button_label|default('Sauvegarder') }}
+    </button>
 
-    {{ form_end(form) }}
+{{ form_end(form) }}
