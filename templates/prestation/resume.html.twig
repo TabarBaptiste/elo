@@ -25,6 +25,9 @@
 
         <h3>3. Vos informations</h3>
         <form id="confirmation-form" action="{{ path('app_reservation_confirm') }}" method="post" style="margin-top: 1rem;">
+                <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
+                <input type="hidden" name="date" value="{{ date|date('Y-m-d') }}">
+                <input type="hidden" name="heure" value="{{ heure }}">
             {% if user %}
                 <p><strong>Nom :</strong> {{ user.nom }}</p>
                 <p><strong>Prénom :</strong> {{ user.prenom }}</p>
@@ -33,9 +36,6 @@
                 <input type="hidden" name="prenom" value="{{ user.prenom }}">
                 <input type="hidden" name="nom" value="{{ user.nom }}">
                 <input type="hidden" name="email" value="{{ user.email }}">
-                <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
-                <input type="hidden" name="date" value="{{ date|date('Y-m-d') }}">
-                <input type="hidden" name="heure" value="{{ heure }}">
             {% else %}
                 <label for="prenom"><strong>Prénom :</strong></label>
                 <input type="text" name="prenom" id="prenom" required>
