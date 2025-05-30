@@ -8,6 +8,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\UserRepository;
 use App\Entity\User;
 use App\Repository\ReservationPrestationRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 final class UserController extends AbstractController
 {
@@ -50,4 +54,40 @@ final class UserController extends AbstractController
         ]);
     }
 
+    #[Route('/user/{id}/delete', name: 'app_user_delete', methods: ['POST'])]
+    public function deleteUser(
+        Request $request,
+        User $user,
+        EntityManagerInterface $entityManager,
+        TokenStorageInterface $tokenStorage,
+        SessionInterface $session
+    ): Response {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->get('_token'))) {
+
+            // Supprimer les réservations associées à l'utilisateur
+            $reservations = $user->getReservations();
+            foreach ($reservations as $reservation) {
+                $entityManager->remove($reservation);
+            }
+
+            // Vérifie si l'utilisateur à supprimer est celui connecté
+            $connectedUser = $tokenStorage->getToken()?->getUser();
+            $isSelfDeletion = $connectedUser instanceof User && $connectedUser->getId() === $user->getId();
+
+            // Supprimer l'utilisateur
+            $entityManager->remove($user);
+            $entityManager->flush();
+
+            if ($isSelfDeletion) {
+                // Déconnexion propre : invalide session et vide le token
+                $session->invalidate();
+                $tokenStorage->setToken(null);
+
+                // Redirection vers accueil
+                return $this->redirectToRoute('app_prestation_index');
+            }
+        }
+
+        return $this->redirectToRoute('app_client', [], Response::HTTP_SEE_OTHER);
+    }
 }

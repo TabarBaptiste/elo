@@ -57,5 +57,9 @@
     {% else %}
         <p>Aucune prestation réservée.</p>
     {% endif %}
+    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+        <button type="submit" class="btn btn-danger">Supprimer mon compte</button>
+    </form>
 </div>
 {% endblock %}

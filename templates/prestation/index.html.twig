@@ -3,9 +3,11 @@
 {% block body %}
 <h1>Nos Prestations</h1>
 
-<div class="actions">
-    <a class="button-ajouter" href="{{ path('app_prestation_new')}}">Ajouter</a>
-</div>
+{% if is_granted('ROLE_COIFFEUSE') %}
+    <div class="actions">
+        <a class="button-ajouter" href="{{ path('app_prestation_new')}}">Ajouter</a>
+    </div>
+{% endif %}
 <div class="card-grid">
     {% for prestation in prestations %}
     <div class="card">
