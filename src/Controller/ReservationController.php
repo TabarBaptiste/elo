@@ -14,6 +14,7 @@ use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Enum\ReservationStatut;
+use Symfony\Bundle\SecurityBundle\Security;
 
 // #[Route('/admin')]
 final class ReservationController extends AbstractController
@@ -76,6 +77,26 @@ final class ReservationController extends AbstractController
             return $this->redirectToRoute('app_client_show', ['id' => $this->getUser()->getId()]);
         }
         return $this->redirectToRoute('app_client_show');
+    }
+
+    #[Route('/reservation/resume/', name: 'app_reservation_resume', methods: ['GET'])]
+    public function resume(Request $request, PrestationRepository $prestationRepo, Security $security): Response
+    {
+        $prestation = $prestationRepo->find($request->query->get('prestation_id'));
+        if (!$prestation) {
+            throw $this->createNotFoundException('Prestation introuvable.');
+        }
+
+        $date = $request->query->get('date');
+        $heure = $request->query->get('heure');
+        $user = $security->getUser();
+
+        return $this->render('reservation/resume.html.twig', [
+            'prestation' => $prestation,
+            'date' => new \DateTime($date),
+            'heure' => $heure,
+            'user' => $user,
+        ]);
     }
 
     #[Route('/reservation/{id}/statut', name: 'app_reservation_update_statut', methods: ['POST'])]

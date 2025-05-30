@@ -6,7 +6,6 @@ use App\Entity\Prestation;
     use App\Form\PrestationForm;
     use App\Repository\PrestationRepository;
 use App\Repository\DisponibiliteRepository;
-use Symfony\Bundle\SecurityBundle\Security;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,26 +60,6 @@ final class PrestationController extends AbstractController
         return $this->render('prestation/show.html.twig', [
             'prestation' => $prestation,
             'disponibilites' => $grouped,
-        ]);
-    }
-
-    #[Route('/reservation/resume/', name: 'app_reservation_resume', methods: ['GET'])]
-    public function resume(Request $request, PrestationRepository $prestationRepo, Security $security): Response
-    {
-        $prestation = $prestationRepo->find($request->query->get('prestation_id'));
-        if (!$prestation) {
-            throw $this->createNotFoundException('Prestation introuvable.');
-        }
-
-        $date = $request->query->get('date');
-        $heure = $request->query->get('heure');
-        $user = $security->getUser();
-
-        return $this->render('prestation/resume.html.twig', [
-            'prestation' => $prestation,
-            'date' => new \DateTime($date),
-            'heure' => $heure,
-            'user' => $user,
         ]);
     }
 
