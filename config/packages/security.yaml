@@ -23,16 +23,16 @@ security:
             lazy: true
             # provider: users_in_memory
             provider: app_user_provider
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                default_target_path: app_prestation_index
-                username_parameter: email
-                password_parameter: password
+            # form_login:
+                # login_path: app_login
+                # check_path: app_login
+                # default_target_path: app_prestation_index
+                # username_parameter: email
+                # password_parameter: password
             logout:
                 path: /logout
                 target: app_prestation_index
-            # custom_authenticator: App\Security\LoginAuthenticator
+            custom_authenticator: App\Security\LoginAuthenticator
 
             remember_me:
                 secret: '%kernel.secret%'

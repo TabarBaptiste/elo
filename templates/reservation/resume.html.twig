@@ -23,12 +23,12 @@
             <p>à {{ heure }}</p>
         </div>
 
-        <h3>3. Vos informations</h3>
         <form id="confirmation-form" action="{{ path('app_reservation_confirm') }}" method="post" style="margin-top: 1rem;">
                 <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
                 <input type="hidden" name="date" value="{{ date|date('Y-m-d') }}">
                 <input type="hidden" name="heure" value="{{ heure }}">
             {% if user %}
+                <h3>3. Vos informations</h3>
                 <p><strong>Nom :</strong> {{ user.nom }}</p>
                 <p><strong>Prénom :</strong> {{ user.prenom }}</p>
                 <p><strong>Email :</strong> {{ user.email }}</p>
@@ -37,26 +37,20 @@
                 <input type="hidden" name="nom" value="{{ user.nom }}">
                 <input type="hidden" name="email" value="{{ user.email }}">
             {% else %}
-            {# TODO La fonction de création d'utilisateur et tout ça... #}
-                <label for="prenom"><strong>Prénom :</strong></label>
-                <input type="text" name="prenom" id="prenom" style="width: 95%; padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc;" required>
-
-                <label for="nom"><strong>Nom :</strong></label>
-                <input type="text" name="nom" id="nom" style="width: 95%; padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc;" required>
-
-                <label for="email"><strong>Email :</strong></label>
-                <input type="email" name="email" id="email" style="width: 95%; padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc;" required>
-
-                <p id="error-message" style="color: red; display: none;">
-                    Veuillez remplir toutes les informations pour confirmer votre réservation.
-                </p>
+                <div style="color: red; text-align: center; font-weight: bold; margin-top: 1rem;">
+                    Vous devez vous connecter pour réserver.
+                </div>
             {% endif %}
 
             <div class="actions">
                 <a href="{{ path('app_prestation_show', {'id': prestation.id}) }}" class="button-retour">Retour à la prestation</a>
-                <button type="submit" class="button-modifier">
-                    Confirmer la réservation
-                </button>
+                {% if user %}
+                    <button type="submit" class="button-modifier">
+                        Confirmer la réservation
+                    </button>
+                {% else %}
+                    <a href="{{ path('app_login', {redirectTo: app.request.uri}) }}" class="button-modifier">Connexion</a>
+                {% endif %}
             </div>
         </form>
     </div>
