@@ -72,21 +72,21 @@ Il permet aux utilisateurs de réserver des prestations en ligne et aux coiffeur
 ## 🚀 Installation
 
 ```bash
-# 1. Cloner le dépôt
-git clone https://github.com/TabarBaptiste/elo.git
+# 1. Cloner le dépôt sur la branche testPublic
+git clone -b testPublic https://github.com/TabarBaptiste/elo.git
 cd elo
 
-# 2. Installer les dépendances
+# 2. Installer les dépendances PHP
 composer install
 
-# 3. Configurer la base de données
-# Modifier le fichier .env.local ou configurer un parameters.yml (selon version Symfony)
-
-# 4. Créer la base
+# 3. Créer la base de données
 php bin/console doctrine:database:create
 
-# 5. Générer le schéma
+# 4. Générer le schéma de la base
 php bin/console doctrine:schema:update --force
+
+# 5. Charger les fixtures (données de test)
+php bin/console doctrine:fixtures:load --no-interaction
 ```
 
 ---
