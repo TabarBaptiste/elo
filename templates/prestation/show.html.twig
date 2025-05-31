@@ -8,56 +8,58 @@
     <p><strong>Description :</strong> {{ prestation.description }}</p>
     <p><strong>Formule :</strong> {{ prestation.formule ? 'Oui' : 'Non' }}</p>
     <div class="actions">
-        <a class="button-retour" href="{{ path('app_prestation_index') }}"><i class="fa-solid fa-arrow-left"></i> Retour</a>
-    {% if is_granted('ROLE_COIFFEUSE') %}
-        <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
-    {% endif %}
+        <a class="button-retour" href="{{ path('app_prestation_index') }}">
+            <i class="fa-solid fa-arrow-left"></i> Retour
+        </a>
+        {% if is_granted('ROLE_COIFFEUSE') %}
+            <a class="button-modifier" href="{{ path('app_prestation_edit', {'id': prestation.id}) }}">Modifier</a>
+        {% endif %}
     </div>
 
-<h3>Choisissez une date & une heure</h3>
+    <h3>Choisissez une date & une heure</h3>
 
-<form id="reservation-form" method="GET" action="{{ path('app_reservation_resume') }}">
-    <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
-    <input type="hidden" name="date" id="selected-date">
-    <input type="hidden" name="heure" id="selected-heure">
-</form>
+    <form id="reservation-form" method="GET" action="{{ path('app_reservation_resume') }}">
+        <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
+        <input type="hidden" name="date" id="selected-date">
+        <input type="hidden" name="heure" id="selected-heure">
+    </form>
 
-<div id="disponibilites-container">
-    {% set i = 0 %}
-    {% for date, horaires in disponibilites %}
-        <div class="date-block" data-visible="{{ i < 5 ? 'true' : 'false' }}" style="{{ i < 5 ? '' : 'display: none;' }}">
-            <button class="toggle-date" type="button">
-                {{ date|date('l j F', 'Europe/Paris')|capitalize }}
-            </button>
-            <div class="horaires" style="display: none;">
-                {% for horaire in horaires %}
-                    <button class="horaire-btn" type="button"
-                            data-date="{{ date }}"
-                            data-heure="{{ horaire.heureDebut }}">
-                        {{ horaire.heureDebut }}
-                    </button>
-                {% endfor %}
+    <div id="disponibilites-container">
+        {% set i = 0 %}
+        {% for date, horaires in disponibilites %}
+            <div class="date-block" data-visible="{{ i < 5 ? 'true' : 'false' }}" style="{{ i < 5 ? '' : 'display: none;' }}">
+                <button class="toggle-date" type="button">
+                    {{ date|date('l j F', 'Europe/Paris')|capitalize }}
+                </button>
+                <div class="horaires" style="display: none;">
+                    {% for horaire in horaires %}
+                        <button class="horaire-btn" type="button"
+                                data-date="{{ date }}"
+                                data-heure="{{ horaire.heureDebut }}">
+                            {{ horaire.heureDebut }} - {{ horaire.heureFin }}
+                        </button>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-        {% set i = i + 1 %}
-    {% endfor %}
-</div>
+            {% set i = i + 1 %}
+        {% endfor %}
+    </div>
 
-{% if disponibilites|length > 5 %}
-    <button id="load-more" type="button">Afficher plus de disponibilités</button>
-{% endif %}
-
-
+    {% if disponibilites|length > 5 %}
+        <button id="load-more" type="button">Afficher plus de disponibilités</button>
+    {% endif %}
 </div>
 
 <script>
+    // Toggle affichage des horaires
     document.querySelectorAll('.toggle-date').forEach(btn => {
         btn.addEventListener('click', () => {
             const horaires = btn.nextElementSibling;
-            horaires.style.display = horaires.style.display === 'none' ? 'flex' : 'none';
+            horaires.style.display = (horaires.style.display === 'none') ? 'flex' : 'none';
         });
     });
 
+    // Lorsqu'on clique sur un créneau, on renseigne le formulaire et on soumet
     document.querySelectorAll('.horaire-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const date = btn.dataset.date;
@@ -65,11 +67,11 @@
 
             document.getElementById('selected-date').value = date;
             document.getElementById('selected-heure').value = heure;
-
             document.getElementById('reservation-form').submit();
         });
     });
 
+    // Bouton "Afficher plus"
     const loadMoreBtn = document.getElementById('load-more');
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener('click', () => {
@@ -84,6 +86,4 @@
         });
     }
 </script>
-
-
 {% endblock %}

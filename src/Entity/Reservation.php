@@ -21,14 +21,11 @@ class Reservation
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     private ?User $utilisateur = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $dateReservation = null;
-
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $heureReservation = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $debut = null;
 
     #[ORM\Column(type: 'string', enumType: ReservationStatut::class)]
-    private ?ReservationStatut $statut = null;    
+    private ?ReservationStatut $statut = null;
 
     /**
      * @var Collection<int, ReservationPrestation>
@@ -58,28 +55,39 @@ class Reservation
         return $this;
     }
 
-    public function getDateReservation(): ?\DateTime
+    public function getDate(): ?\DateTime
     {
-        return $this->dateReservation;
+        return $this->date;
     }
 
-    public function setDateReservation(\DateTime $dateReservation): static
+    public function setDate(\DateTime $date): static
     {
-        $this->dateReservation = $dateReservation;
+        $this->date = $date;
 
         return $this;
     }
 
-    public function getHeureReservation(): ?\DateTime
+    public function getFin(): ?\DateTime
     {
-        return $this->heureReservation;
+        if (!$this->debut)
+            return null;
+
+        return (clone $this->debut)->modify('+' . $this->getDureeTotale() . ' minutes');
     }
 
-    public function setHeureReservation(\DateTime $heureReservation): static
+    public function getDureeTotale(): int
     {
-        $this->heureReservation = $heureReservation;
+        $dureeTotale = 0;
 
-        return $this;
+        foreach ($this->getReservationPrestations() as $reservationPrestation) {
+            $prestation = $reservationPrestation->getPrestation();
+
+            if ($prestation !== null) {
+                $dureeTotale += $prestation->getDuree();
+            }
+        }
+
+        return $dureeTotale;
     }
 
     public function getStatut(): ?ReservationStatut

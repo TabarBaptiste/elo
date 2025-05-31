@@ -14,52 +14,37 @@ class Disponibilite
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $date = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $debut = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $heureDebut = null;
-
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $heureFin = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $fin = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDebut(): ?\DateTime
     {
-        return $this->date;
+        return $this->debut;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDebut(\DateTime $debut): static
     {
-        $this->date = $date;
+        $this->debut = $debut;
 
         return $this;
     }
 
-    public function getHeureDebut(): ?\DateTime
+    public function getFin(): ?\DateTime
     {
-        return $this->heureDebut;
+        return $this->fin;
     }
 
-    public function setHeureDebut(\DateTime $heureDebut): static
+    public function setFin(\DateTime $fin): static
     {
-        $this->heureDebut = $heureDebut;
-
-        return $this;
-    }
-
-    public function getHeureFin(): ?\DateTime
-    {
-        return $this->heureFin;
-    }
-
-    public function setHeureFin(\DateTime $heureFin): static
-    {
-        $this->heureFin = $heureFin;
+        $this->fin = $fin;
 
         return $this;
     }

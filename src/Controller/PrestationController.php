@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Prestation;
-    use App\Form\PrestationForm;
-    use App\Repository\PrestationRepository;
+use App\Form\PrestationForm;
+use App\Repository\PrestationRepository;
 use App\Repository\DisponibiliteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,16 +46,37 @@ final class PrestationController extends AbstractController
     public function show(Prestation $prestation, DisponibiliteRepository $dispoRepo): Response
     {
         $disponibilites = $dispoRepo->findAll();
-
-        // Regrouper les disponibilités par date (formatée en Y-m-d)
         $grouped = [];
+
         foreach ($disponibilites as $dispo) {
-            $dateKey = $dispo->getDate()->format('Y-m-d');
-            $grouped[$dateKey][] = [
-                'heureDebut' => $dispo->getHeureDebut()->format('H:i'),
-                'heureFin' => $dispo->getHeureFin()->format('H:i'),
-            ];
+            $dateKey = $dispo->getDebut()->format('Y-m-d');
+
+            // Durée de la prestation (en minutes)
+            $duree = $prestation->getDuree();
+
+            $current = clone $dispo->getDebut(); // début de la plage
+            $end = $dispo->getFin();             // fin de la plage
+
+            // Boucle sur les créneaux disponibles
+            while ($current < $end) {
+                $finCreneau = (clone $current)->add(new \DateInterval('PT' . $duree . 'M'));
+
+                // Si le créneau dépasse la fin de la plage, on arrête
+                if ($finCreneau > $end) {
+                    break;
+                }
+
+                $grouped[$dateKey][] = [
+                    'heureDebut' => $current->format('H:i'),
+                    'heureFin' => $finCreneau->format('H:i'),
+                ];
+
+                // Avancer au prochain créneau (sans pause)
+                $current = $finCreneau;
+            }
         }
+
+        ksort($grouped); // trier les dates
 
         return $this->render('prestation/show.html.twig', [
             'prestation' => $prestation,
@@ -92,3 +113,48 @@ final class PrestationController extends AbstractController
         return $this->redirectToRoute('app_prestation_index', [], Response::HTTP_SEE_OTHER);
     }
 }
+
+//* Pause de 5min entre prestation
+// public function show(Prestation $prestation, DisponibiliteRepository $dispoRepo): Response
+// {
+//     $disponibilites = $dispoRepo->findAll();
+
+//     $grouped = [];
+
+//     foreach ($disponibilites as $dispo) {
+//         $dateKey = $dispo->getDebut()->format('Y-m-d');
+
+//         // Durée de la prestation
+//         $duree = $prestation->getDuree(); // en minutes
+//         $pause = 5; // minutes
+
+//         $current = clone $dispo->getDebut(); // début de la plage
+//         $end = $dispo->getFin(); // fin de la plage
+
+//         // Boucle sur les créneaux disponibles
+//         while ($current < $end) {
+//             $finCreneau = (clone $current)->add(new \DateInterval('PT' . $duree . 'M'));
+
+//             // Si le créneau déborde, on sort
+//             if ($finCreneau > $end) {
+//                 break;
+//             }
+
+//             $grouped[$dateKey][] = [
+//                 'heureDebut' => $current->format('H:i'),
+//                 'heureFin' => $finCreneau->format('H:i'),
+//             ];
+
+//             // Ajouter pause et avancer
+//             $current = $finCreneau->add(new \DateInterval('PT' . $pause . 'M'));
+//             // dd($current);
+//         }
+//     }
+
+//     ksort($grouped); // trier les dates
+
+//     return $this->render('prestation/show.html.twig', [
+//         'prestation' => $prestation,
+//         'disponibilites' => $grouped,
+//     ]);
+// }
