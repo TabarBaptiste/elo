@@ -30,8 +30,8 @@
                 {% for reservationPrestation in prestationsReservees %}
                     <tr>
                         <td>{{ reservationPrestation.prestation.nom }}</td>
-                        <td>{{ reservationPrestation.reservation.dateReservation|date('d/m/Y') }}</td>
-                        <td>{{ reservationPrestation.reservation.heureReservation|date('H:i') }}</td>
+                        <td>{{ reservationPrestation.reservation.debut|date('d/m/Y') }}</td>
+                        <td>{{ reservationPrestation.reservation.debut|date('H:i') }}</td>
                         <td class="statut {{ reservationPrestation.reservation.statut.value }}">
                             {{ reservationPrestation.reservation.statut.label }}
                         </td>

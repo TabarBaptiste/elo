@@ -55,14 +55,14 @@ class Reservation
         return $this;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDebut(): ?\DateTime
     {
-        return $this->date;
+        return $this->debut;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDebut(\DateTime $debut): static
     {
-        $this->date = $date;
+        $this->debut = $debut;
 
         return $this;
     }

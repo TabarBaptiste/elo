@@ -22,6 +22,7 @@
         <input type="hidden" name="prestation_id" value="{{ prestation.id }}">
         <input type="hidden" name="date" id="selected-date">
         <input type="hidden" name="heure" id="selected-heure">
+        <input type="hidden" name="heureFin" id="selected-heureFin">
     </form>
 
     <div id="disponibilites-container">
@@ -35,7 +36,8 @@
                     {% for horaire in horaires %}
                         <button class="horaire-btn" type="button"
                                 data-date="{{ date }}"
-                                data-heure="{{ horaire.heureDebut }}">
+                                data-heure="{{ horaire.heureDebut }}"
+                                data-heureFin="{{ horaire.heureFin }}">
                             {{ horaire.heureDebut }} - {{ horaire.heureFin }}
                         </button>
                     {% endfor %}
@@ -64,9 +66,11 @@
         btn.addEventListener('click', () => {
             const date = btn.dataset.date;
             const heure = btn.dataset.heure;
+            const heureFin = btn.dataset.heurefin;
 
             document.getElementById('selected-date').value = date;
             document.getElementById('selected-heure').value = heure;
+            document.getElementById('selected-heureFin').value = heureFin;
             document.getElementById('reservation-form').submit();
         });
     });

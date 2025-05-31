@@ -20,7 +20,7 @@
         <h3>2. Date et heure sélectionnées</h3>
         <div class="resume">
             <p>{{ date|date('l d F Y', 'Europe/Paris')|capitalize }}</p>
-            <p>à {{ heure }}</p>
+            <p>de {{ heure }} à {{ heureFin }}</p>
         </div>
 
         <form id="confirmation-form" action="{{ path('app_reservation_confirm') }}" method="post" style="margin-top: 1rem;">

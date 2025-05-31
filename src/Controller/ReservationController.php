@@ -32,40 +32,46 @@ final class ReservationController extends AbstractController
     public function confirm(
         Request $request,
         EntityManagerInterface $em,
-        PrestationRepository $prestationRepo,
+        PrestationRepository $prestationRepo
     ): Response {
         $prestationId = $request->request->get('prestation_id');
         $date = $request->request->get('date');
         $heure = $request->request->get('heure');
 
+        // 1) Récupérer la prestation
         $prestation = $prestationRepo->find($prestationId);
         if (!$prestation) {
             throw $this->createNotFoundException('Prestation non trouvée.');
         }
 
+        // 2) Construire la réservation
         $reservation = new Reservation();
-        $reservation->setDateReservation(new \DateTime($date));
-        $reservation->setHeureReservation(\DateTime::createFromFormat('H:i', $heure));
+
+        // Combiner date + heure pour obtenir un DateTime de début
+        // Format attendu : "YYYY-MM-DD HH:MM"
+        $debut = new \DateTime(sprintf('%s %s', $date, $heure));
+        $reservation->setDebut($debut);
         $reservation->setStatut(ReservationStatut::EN_ATTENTE);
 
-        // Si utilisateur connecté
+        // 3) Si l'utilisateur est connecté, l'utiliser, sinon créer un utilisateur temporaire
         if ($this->getUser()) {
             $reservation->setUtilisateur($this->getUser());
         } else {
-            // Création d'un utilisateur temporaire ou simple stockage des données
-            $user = new User();
-            $user->setPrenom($request->request->get('prenom'));
-            $user->setNom($request->request->get('nom'));
-            $user->setEmail($request->request->get('email'));
-            $em->persist($user);
-            $reservation->setUtilisateur($user);
+            $this->addFlash('warning', 'Veuillez vous connecter !');
+            return $this->redirectToRoute('app_reservation_resume');
         }
 
-        // Lier la prestation via l'entité d'association (si tu en as une)
+        // 4) Lier la prestation à la réservation via l'entité de jointure
         $reservationPrestation = new ReservationPrestation();
         $reservationPrestation->setPrestation($prestation);
         $reservationPrestation->setReservation($reservation);
 
+        // Attention : si vous voulez garder la cohérence dans l’objet Reservation,
+        // il est préférable de faire :
+        $reservation->addReservationPrestation($reservationPrestation);
+        // plutôt que de ne persister que la jointure.
+
+        // 5) Persister puis flush
         $em->persist($reservation);
         $em->persist($reservationPrestation);
         $em->flush();
@@ -73,10 +79,11 @@ final class ReservationController extends AbstractController
         $this->addFlash('success', 'Réservation enregistrée avec succès !');
 
         if ($this->getUser()) {
-            $this->addFlash('success', 'Réservation enregistrée');
             return $this->redirectToRoute('app_client_show', ['id' => $this->getUser()->getId()]);
         }
-        return $this->redirectToRoute('app_client_show');
+
+        // Si l'utilisateur n'est pas connecté, on redirige vers un profil "vide"
+        return $this->redirectToRoute('app_prestation_index');
     }
 
     #[Route('/reservation/resume/', name: 'app_reservation_resume', methods: ['GET'])]
@@ -89,12 +96,14 @@ final class ReservationController extends AbstractController
 
         $date = $request->query->get('date');
         $heure = $request->query->get('heure');
+        $heureFin = $request->query->get('heureFin');
         $user = $security->getUser();
 
         return $this->render('reservation/resume.html.twig', [
             'prestation' => $prestation,
             'date' => new \DateTime($date),
             'heure' => $heure,
+            'heureFin' => $heureFin,
             'user' => $user,
         ]);
     }
