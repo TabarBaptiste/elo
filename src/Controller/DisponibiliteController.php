@@ -24,26 +24,47 @@ final class DisponibiliteController extends AbstractController
 
 
     #[Route('/new', name: 'app_disponibilite_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
         $disponibilite = new Disponibilite();
         $form = $this->createForm(DisponibiliteForm::class, $disponibilite);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($disponibilite->getDebut() >= $disponibilite->getFin()) {
+            $now = new \DateTimeImmutable('today');
+            $debut = $disponibilite->getDebut();
+            $fin = $disponibilite->getFin();
+
+            if ($debut < $now || $fin < $now) {
+                $this->addFlash('error', 'Les dates doivent être postérieures ou égales à aujourd\'hui.');
+                return $this->redirectToRoute('app_disponibilite_new');
+            }
+
+            if ($debut >= $fin) {
                 $this->addFlash('error', 'La date de début doit être avant la date de fin.');
                 return $this->redirectToRoute('app_disponibilite_new');
             }
 
-            $entityManager->persist($disponibilite);
-            $entityManager->flush();
+            // Vérifie qu’il n’y a pas de chevauchement
+            $overlap = $em->getRepository(Disponibilite::class)->createQueryBuilder('d')
+                ->where('(:debut < d.fin) AND (:fin > d.debut)')
+                ->setParameter('debut', $debut)
+                ->setParameter('fin', $fin)
+                ->getQuery()
+                ->getResult();
 
-            return $this->redirectToRoute('app_disponibilite_index', [], Response::HTTP_SEE_OTHER);
+            if ($overlap) {
+                $this->addFlash('error', 'Une disponibilité existe déjà sur cette période.');
+                return $this->redirectToRoute('app_disponibilite_new');
+            }
+
+            $em->persist($disponibilite);
+            $em->flush();
+
+            return $this->redirectToRoute('app_disponibilite_index');
         }
 
         return $this->render('disponibilite/new.html.twig', [
-            'disponibilite' => $disponibilite,
             'form' => $form,
         ]);
     }
@@ -57,25 +78,48 @@ final class DisponibiliteController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_disponibilite_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Disponibilite $disponibilite, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Disponibilite $disponibilite, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(DisponibiliteForm::class, $disponibilite);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($disponibilite->getDebut() >= $disponibilite->getFin()) {
+            $now = new \DateTimeImmutable('today');
+            $debut = $disponibilite->getDebut();
+            $fin = $disponibilite->getFin();
+
+            if ($debut < $now || $fin < $now) {
+                $this->addFlash('error', 'Les dates doivent être postérieures ou égales à aujourd\'hui.');
+                return $this->redirectToRoute('app_disponibilite_edit', ['id' => $disponibilite->getId()]);
+            }
+
+            if ($debut >= $fin) {
                 $this->addFlash('error', 'La date de début doit être avant la date de fin.');
                 return $this->redirectToRoute('app_disponibilite_edit', ['id' => $disponibilite->getId()]);
             }
 
-            $entityManager->flush();
+            // Vérifie qu’il n’y a pas de chevauchement avec d’autres (sauf lui-même)
+            $overlap = $em->getRepository(Disponibilite::class)->createQueryBuilder('d')
+                ->where('(:debut < d.fin) AND (:fin > d.debut) AND d.id != :id')
+                ->setParameter('debut', $debut)
+                ->setParameter('fin', $fin)
+                ->setParameter('id', $disponibilite->getId())
+                ->getQuery()
+                ->getResult();
 
-            return $this->redirectToRoute('app_disponibilite_index', [], Response::HTTP_SEE_OTHER);
+            if ($overlap) {
+                $this->addFlash('error', 'Une autre disponibilité existe déjà sur cette période.');
+                return $this->redirectToRoute('app_disponibilite_edit', ['id' => $disponibilite->getId()]);
+            }
+
+            $em->flush();
+
+            return $this->redirectToRoute('app_disponibilite_index');
         }
 
         return $this->render('disponibilite/edit.html.twig', [
-            'disponibilite' => $disponibilite,
             'form' => $form,
+            'disponibilite' => $disponibilite,
         ]);
     }
 
